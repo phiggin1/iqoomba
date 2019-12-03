@@ -1,0 +1,28 @@
+controller_frequency: 5.0
+planner_patience: 1.0
+clearing_rotation_allowed: False
+
+TrajectoryPlannerROS:
+  max_vel_x: 0.10
+  min_vel_x: 0.01
+
+  max_vel_theta: 1.5
+  min_in_place_vel_theta: 0.1
+
+  acc_lim_x: 2.5
+  acc_lim_y: 0.0
+  acc_lim_theta: 3.2
+
+  holonomic_robot: false
+
+  meter_scoring: true
+  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.1
+  goal_distance_bias: 0.8
+  path_distance_bias: 0.6
+  sim_time: 3.0
+  heading_lookahead: 0.325
+  ossillation_distance: 0.05
+
+  vx_samples: 6
+  vtheata_samples: 20

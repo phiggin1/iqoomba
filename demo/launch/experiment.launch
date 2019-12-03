@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="laser_pointer" type="listener.py" name="point_listener" output="screen"></node>
+  <node pkg="sound_play" type="soundplay_node.py" name="robot_talker" output="screen"></node>
+  <node pkg="audio_capture" type="audio_capture" name="audio_capture" output="screen"></node>
+  <node pkg="demo" type="markers.py" name="markers" output="screen"></node>
+</launch>
