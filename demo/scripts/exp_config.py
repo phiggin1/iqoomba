@@ -17,8 +17,6 @@ class ExpConfig:
 		marker.type = marker.TEXT_VIEW_FACING
 		marker.action = marker.ADD
 
-		marker.scale.x = 0.1
-		marker.scale.y = 0.1
 		marker.scale.z = 0.1
 
 		marker.color.r = 1.0
@@ -32,18 +30,22 @@ class ExpConfig:
 		marker.pose.orientation.w = 1.0
 
 		marker.pose.position = map_pt.point
-		marker.pose.position.x = marker.pose.position.x - 0.1
+		marker.pose.position.x = marker.pose.position.x# - 0.1
 		#marker.lifetime = rospy.Time.duration()
-		marker.text = "point"
+		marker.text = "OBJECT"
 
+		'''
 		print "clicked point:", stamped_point.header.frame_id, stamped_point.point
 		print "transformed point:", map_pt.header.frame_id, map_pt.point
 		print "marked point:", marker.header.frame_id, marker.pose.position
+		'''
 
 		self.marker_publisher.publish(marker)
-		self.f.write("%s,%s,%s\n" %  (map_pt.point.x, map_pt.point.y, map_pt.point.z))
-		#check if correct
-			#if yes write to file
+		label =  raw_input("Label (enter 'skip' to try again): ") 
+		if label != 'skip':
+			print("writing to file")#, map_pt)
+			self.f.write("%s,%s,%s,%s\n" %  (label, map_pt.point.x, map_pt.point.y, map_pt.point.z))
+
 		
 	def __init__(self):
 		rospy.init_node('listener', anonymous=True)
@@ -51,7 +53,7 @@ class ExpConfig:
 		#start lisening for transforms
 		self.tf_listener = tf.TransformListener()
 		
-		self.marker_publisher = rospy.Publisher('markers', Marker, queue_size=10)
+		self.marker_publisher = rospy.Publisher('marker', Marker, queue_size=10)
 		self.f = open("objects.txt", 'w')
 
 		#subscribe to the point clicked topic and register callback method
