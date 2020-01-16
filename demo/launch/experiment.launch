@@ -1,6 +1,16 @@
 <launch>
   <node pkg="laser_pointer" type="listener.py" name="point_listener" output="screen"></node>
-  <node pkg="sound_play" type="soundplay_node.py" name="robot_talker" output="screen"></node>
-  <node pkg="audio_capture" type="audio_capture" name="audio_capture" output="screen"></node>
-  <node pkg="demo" type="markers.py" name="markers" output="screen"></node>
+
+  <arg name="config_file" default="$(find tts)/config/sample_configuration.yaml" />
+  <include file="$(find tts)/launch/tts_polly.launch" >
+      <!-- The configuration can either be passed in using the "config_file" parameter or
+              by using a rosparam tag to load the config into the parameter server -->
+      <arg name="config_file" value="$(arg config_file)"/>
+  </include>
+
+
+  <include file="$(find audio_capture)/launch/capture.launch" >  
+  </include>
+
+
 </launch>

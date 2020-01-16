@@ -1,19 +1,22 @@
 <launch>
 
-<include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch">
-<arg name="depth_method" default="opengl"/>
-<arg name="reg_method" default="cpu"/>
-<arg name="publish_tf" default="true"/>
+#bring up the kinect
+<include file="$(find azure_kinect_ros_driver)/launch/driver.launch">
 </include>
 
+#bring up the create
 <arg name="config" default="$(find ca_driver)/config/default.yaml" />
 <arg name="desc" default="true" />
+
 <node name="ca_driver" pkg="ca_driver" type="ca_driver" output="screen">
-	<rosparam command="load" file="$(arg config)" />
-	<param name="robot_model" value="CREATE_2" />
+<rosparam command="load" file="$(arg config)" />
+<param name="robot_model" value="CREATE_2" />
 </node>
 <!-- Robot description -->
-<include if="$(arg desc)" file="$(find ca_description)/launch/create_2.launch" />
+<param name="robot_description" command="$(find xacro)/xacro.py '$(find ca_description)/urdf/create_2.urdf.xacro'" />
+<node name="create_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
 
+#Transform Broadcaster for kinect and pantilt
 <node pkg="iqoomba_tf_setup" type="tf_broadcaster.py" name="tf_broadcaster" output="screen"></node>
+
 </launch> 

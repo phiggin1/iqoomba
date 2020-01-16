@@ -31,10 +31,14 @@ class PanTiltListener:
 
 		#TODO: need to generalize pi address and port
 		context = zmq.Context()
+		'''
 		self.socket = context.socket(zmq.PAIR)
 		self.socket.bind("tcp://*:%s" % 4444)
-
-		print("bound port")
+		'''
+		print("connecting")
+		self.socket = context.socket(zmq.PAIR)
+		self.socket.connect("tcp://130.85.202.6:4444")
+		print("connected to server")
 
 		#subscribe to the point clicked topic and register callback method
 		rospy.Subscriber("clicked_point", PointStamped, self.callback)

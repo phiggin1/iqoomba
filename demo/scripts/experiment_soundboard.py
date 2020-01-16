@@ -10,7 +10,12 @@ import math
 import zmq
 import numpy as np
 
+from copy import copy
+
 from sound_play.libsoundplay import SoundClient
+
+from tts.msg import SpeechAction, SpeechGoal
+
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import Quaternion
@@ -23,24 +28,22 @@ LABEL = "LABEL"
 LASER_ON = "LASER_ON"
 LASER_OFF = "LASER_OFF"
 
-
-POINT_TIME = 1.0
-SPEECH_DELAY = 2.5
+POINT_TIME = 5.0
 
 
 '''
-			"What is this [robot points at specific object]?",
-			"Where is the _____?",
-			"Can you describe and show me an object that is similarly sized?",
-			"Could you place ___ next to _____?",
-			"Can you tell me more about ______?",
-			"What would you use this  [robot points at specific object] object for?",
-			"How are ______ and ______ similar?",
-			"How would you describe ________?",
-			"How would you use ______?",
-			"Can you describe one of the objects that you would use everyday?",
-			"How is _______ different from _________?",
-			"Could you sort all the objects by how useful you would find them?"
+"What is this [robot points at specific object]?",
+"Where is the _____?",
+"Can you describe and show me an object that is similarly sized?",
+"Could you place ___ next to _____?",
+"Can you tell me more about ______?",
+"What would you use this  [robot points at specific object] object for?",
+"How are ______ and ______ similar?",
+"How would you describe ________?",
+"How would you use ______?",
+"Can you describe one of the objects that you would use everyday?",
+"How is _______ different from _________?",
+"Could you sort all the objects by how useful you would find them?"
 '''
 
 def get_stamped_point(x,y,z):
@@ -72,20 +75,28 @@ def get_goal_pose(theta):
 
 class SoundBoard:
 	def __init__(self):
+		'''
 		self.questions = [
 			["What is this", POINT], 
 			["Where is the", LABEL], 
-			["Can you describe", POINT, "and show me an object that is similarly sized"],
-			["Could you place", POINT, "next to", POINT],
-			["Can you tell me more about", POINT],
+			["Can you describe this", POINT, "and show me an object that is similarly sized"],
+			["Could you place this", POINT, "next to this", POINT],
+			["Can you tell me more about this", POINT],
 			["What would you use this", POINT, "object for"],
-			["How are", POINT, "and", POINT, " similar"],
-			["How would you describe", POINT],
-			["How would you use", POINT],
+			["How are this", POINT, "and that", POINT, " similar"],
+			["How would you describe this", POINT],
+			["How would you use this", POINT],
 			["Can you describe one of the objects that you would use everyday"],
-			["How is", POINT, "different from", POINT],
+			["How is this", POINT, "different from that", POINT],
 			["Could you sort all the objects by how useful you would find them"]
 		]
+		'''
+
+		self.questions = [
+			["How are this", POINT, "and that", POINT, " similar"],
+			[POINT, "How are this", POINT, "and that similar"]
+		]
+
 
 		self.statements = [
 			"yes",
@@ -96,10 +107,9 @@ class SoundBoard:
 		]
 
 
-
 		self.objects = []
 		#TODO get rid of hard path link
-		f = open("/home/phiggins/objects.txt", 'r')
+		f = open("/home/iral/objects.txt", 'r')
 		for line in f:
 			label,x,y,z = line.split(',')
 			self.objects.append( (label, float(x), float(y) ,float(z)) )
@@ -107,15 +117,8 @@ class SoundBoard:
 
 		rospy.init_node('experiment', anonymous = True)
 
-		#self.voice = 'voice_kal_diphone'
-		#self.voice = 'voice_ked_diphone'
-		#self.voice = 'voice_rab_diphone'
-		#self.voice = 'voice_us1_mbrola'
-		self.voice = 'voice_us2_mbrola'
-		#self.voice = 'voice_us3_mbrola'
-
-		self.volume = 1.0
-		self.soundhandle = SoundClient(blocking=True)
+		self.soundhandle = actionlib.SimpleActionClient('tts', SpeechAction)
+		self.soundhandle.wait_for_server()
 
 		#self.client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
 		#self.client.wait_for_server()
@@ -162,7 +165,14 @@ class SoundBoard:
 
 		if int(s) >= 0 and int(s) < len(self.statements):
 			if DEBUG: print('DEBUG Saying: %s' % self.statements[s])
-			self.soundhandle.say(self.statements[s], self.voice, self.volume)
+			
+			goal = SpeechGoal()
+			goal.text = self.statements[s]
+			goal.metadata = ''
+
+			self.soundhandle.send_goal(goal)
+			self.soundhandle.wait_for_result()
+
 
 	def prompt_commands(self):
 		print("0: Turn laser on")
@@ -195,10 +205,8 @@ class SoundBoard:
 
 	def build_sentence(self, question):
 		objs = []
-		labels = []
 		o = 0
 		l = 0
-		need_laser  = False
 
 		#Get the objects that will be referenced
 		#either location or the label
@@ -209,32 +217,51 @@ class SoundBoard:
 				need_laser = True
 			elif w == LABEL:
 				obj = self.prompt_objects()
-				labels.append(self.objects[obj][0])
 				if i > 0:
 					if question[i-1] != POINT:
 						question[i-1] += " " + self.objects[obj][0]
 						del question[i]
+
+		self.say_sentance(question, objs)
+
+		repeat = raw_input("Repeat(y/n):")
+		while repeat != "n":
+			self.say_sentance(question, objs)
+			repeat = raw_input("Repeat(y/n):")
+
+		#give an affermation
+		response = "OK"
+		if DEBUG: print('DEBUG Saying: %s' % response)
+		goal = SpeechGoal()
+		goal.text = response
+		goal.metadata = ''
+		self.soundhandle.send_goal(goal)
+		self.soundhandle.wait_for_result()
+
+	def say_sentance(self, question, objs):
+		o = 0
+		laser_on = False
 
 		for i in question:
 			if i == POINT:
 				#self.face_point(objs[o][1], objs[o][2], objs[o][3])
 				if DEBUG: print('DEBUG pointing at: %s' % self.objects[objs[o]][0])
 				self.publish_point(self.objects[objs[o]][1], self.objects[objs[o]][2], self.objects[objs[o]][3])
-				if need_laser:
-					if DEBUG: print("DEBUG: LASER_ON")
-					self.socket.send(LASER_ON)
+				if DEBUG: print("DEBUG: LASER_ON")
+				laser_on = True
+				self.socket.send(LASER_ON)
 				o += 1
 			else:
 				if DEBUG: print('DEBUG Saying: %s' % i)
-				self.soundhandle.say(i, self.voice, self.volume)
-			'''
-			elif i == LABEL:
-				if DEBUG: print('DEBUG Saying label: %s' % labels[l])
-				self.soundhandle.say(labels[l], self.voice, self.volume)
-				l += 1
-			'''
+				goal = SpeechGoal()
+				goal.text = i
+				goal.metadata = ''
 
-		if need_laser: 
+				self.soundhandle.send_goal(goal)
+				self.soundhandle.wait_for_result()
+
+
+		if laser_on:
 			time.sleep(POINT_TIME)
 			if DEBUG: print("DEBUG: LASER_OFF")
 			self.socket.send(LASER_OFF)
@@ -268,8 +295,6 @@ class SoundBoard:
         		rospy.logerr("Action server not available!")
         		rospy.signal_shutdown("Action server not available!")
 
-
-
 	def publish_point(self, x,y,z):
 		p = get_stamped_point(x,y,z)
 
@@ -289,7 +314,7 @@ class SoundBoard:
 				q = self.prompt_questions()
 				if q >=0 and q < len(self.questions):
 					print(self.format_question(self.questions[q]))
-					self.build_sentence(self.questions[q])
+					self.build_sentence(copy(self.questions[q]))
 			elif a== 1:
 				self.prompt_misc()
 			else:
@@ -299,4 +324,5 @@ class SoundBoard:
 if __name__ == '__main__':
 	sb = SoundBoard()
 	sb.run()
+
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import rospy
 import tf
 from  geometry_msgs.msg import PointStamped
@@ -7,7 +8,7 @@ from visualization_msgs.msg import MarkerArray
 
 import os
 
-def get_marker(i, x, y, z):
+def get_marker(i, label, x, y, z):
 	marker = Marker()
 
 	marker.id = i
@@ -15,12 +16,10 @@ def get_marker(i, x, y, z):
 	marker.header.stamp = rospy.Time.now()
 
 	marker.type = marker.TEXT_VIEW_FACING
-	marker.text = "object"+str(i)
+	marker.text = label
 
 	marker.action = marker.ADD
 
-	marker.scale.x = 0.1
-	marker.scale.y = 0.1
 	marker.scale.z = 0.1
 
 	marker.color.r = 1.0
@@ -33,7 +32,7 @@ def get_marker(i, x, y, z):
 	marker.pose.orientation.z = 0.0
 	marker.pose.orientation.w = 1.0
 
-	marker.pose.position.x = float(x)#-0.1
+	marker.pose.position.x = float(x)
 	marker.pose.position.y = float(y)
 	marker.pose.position.z = float(z)
 
@@ -45,15 +44,12 @@ def send_markers():
 
 	marker_array = MarkerArray()
 
-	print(os.getcwd())
-
+	f = open("/home/iral/objects.txt", 'r')
 	count = 0
-	f = open("/home/phiggins/catkin_ws/src/demo/scripts/objects.txt", 'r')
 	for line in f:
-		x,y,z = line.split(',')
-		print("marker", x,y,z)
-		marker_array.markers.append(get_marker(count, x, y ,z))
-		count+=1
+		label,x,y,z = line.split(',')
+		marker_array.markers.append(get_marker(int(count), label, float(x), float(y) ,float(z)))
+		count += 1
 	f.close()
 
 	rate = rospy.Rate(0.1)
