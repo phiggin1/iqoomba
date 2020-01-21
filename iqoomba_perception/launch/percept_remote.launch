@@ -1,0 +1,6 @@
+<launch>
+
+  <node pkg="iqoomba_perception" type="segmentation.py" name="segmentation" output="screen"></node>
+  <node pkg="iqoomba_perception" type="marker_transform.py" name="marker_transform" output="screen"></node>
+
+</launch>

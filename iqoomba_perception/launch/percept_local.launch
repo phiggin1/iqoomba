@@ -1,0 +1,6 @@
+<launch>
+
+  <include file="$(find iqoomba_perception)/launch/box_filter.launch" >  </include>
+  <node pkg="iqoomba_perception" type="ransac.py" name="ransav" output="screen"></node>
+
+</launch>
