@@ -1,8 +1,7 @@
 <launch>
 
 #bring up the kinect
-<include file="$(find azure_kinect_ros_driver)/launch/driver.launch">
-</include>
+<include file="$(find azure_kinect_ros_driver)/launch/driver.launch"></include>
 
 #bring up the create
 <arg name="config" default="$(find ca_driver)/config/default.yaml" />
@@ -19,4 +18,6 @@
 #Transform Broadcaster for kinect and pantilt
 <node pkg="iqoomba_tf_setup" type="tf_broadcaster.py" name="tf_broadcaster" output="screen"></node>
 
+#Laser Pointer
+<node pkg="laser_pointer" type="listener.py" name="point_listener" output="screen"></node>
 </launch> 

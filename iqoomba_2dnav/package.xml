@@ -53,12 +53,8 @@
   <build_depend>iai_kinect2</build_depend>
   <build_depend>iqoomba_tf_setup</build_depend>
   <build_depend>move_base</build_depend>
-  <build_export_depend>create_autonomy</build_export_depend>
-  <build_export_depend>iai_kinect2</build_export_depend>
   <build_export_depend>iqoomba_tf_setup</build_export_depend>
   <build_export_depend>move_base</build_export_depend>
-  <exec_depend>create_autonomy</exec_depend>
-  <exec_depend>iai_kinect2</exec_depend>
   <exec_depend>iqoomba_tf_setup</exec_depend>
   <exec_depend>move_base</exec_depend>
 

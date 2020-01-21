@@ -120,6 +120,7 @@ class SoundBoard:
 		self.soundhandle = actionlib.SimpleActionClient('tts', SpeechAction)
 		self.soundhandle.wait_for_server()
 
+		#unneeded for not, used if the robot needs to turn to face something
 		#self.client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
 		#self.client.wait_for_server()
 
@@ -134,6 +135,12 @@ class SoundBoard:
 
 		#rospy.sleep(1)
 
+	def high_level_prompt(self):
+		print("0: Question")
+		print("1: Statement")
+		print("else: Quit")
+
+		return input()
 
 	def prompt_questions(self):
 		for i,q in enumerate(self.questions):
@@ -141,6 +148,16 @@ class SoundBoard:
 			print(s)
 
 		return input()
+
+	def format_question(self, question):
+		s = ""
+		for q in question:
+			if q == LABEL or q == POINT: 
+				s += " _____ "
+			elif q != LASER_ON and q != LASER_OFF:
+				s += q
+
+		return s
 
 	def prompt_objects(self):
 		for i,o in enumerate(self.objects):
@@ -173,7 +190,6 @@ class SoundBoard:
 			self.soundhandle.send_goal(goal)
 			self.soundhandle.wait_for_result()
 
-
 	def prompt_commands(self):
 		print("0: Turn laser on")
 		print("1: Turn laser off")
@@ -186,23 +202,7 @@ class SoundBoard:
 			if DEBUG: print("DEBUG: LASER_ON")
 			self.socket.send(LASER_ON)
 	
-	def format_question(self, question):
-		s = ""
-		for q in question:
-			if q == LABEL or q == POINT: 
-				s += " _____ "
-			elif q != LASER_ON and q != LASER_OFF:
-				s += q
-
-		return s
-
-	def high_level_prompt(self):
-		print("0: Question")
-		print("1: Statement")
-		print("else: Quit")
-
-		return input()
-
+	#given a question prompt the user for all the required information needed
 	def build_sentence(self, question):
 		objs = []
 		o = 0
@@ -222,14 +222,16 @@ class SoundBoard:
 						question[i-1] += " " + self.objects[obj][0]
 						del question[i]
 
+		#get the robot the say the question
 		self.say_sentance(question, objs)
 
+		#check if the robot needs to say it again
 		repeat = raw_input("Repeat(y/n):")
 		while repeat != "n":
 			self.say_sentance(question, objs)
 			repeat = raw_input("Repeat(y/n):")
 
-		#give an affermation
+		#give an affermation so the subject doesn't ramble on too much
 		response = "OK"
 		if DEBUG: print('DEBUG Saying: %s' % response)
 		goal = SpeechGoal()
@@ -238,11 +240,14 @@ class SoundBoard:
 		self.soundhandle.send_goal(goal)
 		self.soundhandle.wait_for_result()
 
+	#speak the sentance and point the laser at objects
 	def say_sentance(self, question, objs):
 		o = 0
 		laser_on = False
 
+		#go through the qestion
 		for i in question:
+			#point at objects
 			if i == POINT:
 				#self.face_point(objs[o][1], objs[o][2], objs[o][3])
 				if DEBUG: print('DEBUG pointing at: %s' % self.objects[objs[o]][0])
@@ -251,6 +256,7 @@ class SoundBoard:
 				laser_on = True
 				self.socket.send(LASER_ON)
 				o += 1
+			#speak
 			else:
 				if DEBUG: print('DEBUG Saying: %s' % i)
 				goal = SpeechGoal()
@@ -266,7 +272,9 @@ class SoundBoard:
 			if DEBUG: print("DEBUG: LASER_OFF")
 			self.socket.send(LASER_OFF)
 
-
+	'''
+	#Uneeded for now, could be used to get the robot to turn to face objects if needed
+	#
 	def face_point(self, x,y,z):
 		#print("facing ",x,y,z)
 		p = get_stamped_point(x,y,z)
@@ -294,13 +302,17 @@ class SoundBoard:
     		if not wait:
         		rospy.logerr("Action server not available!")
         		rospy.signal_shutdown("Action server not available!")
+	'''
 
+	#publish the point to get the laser pointer to point at that point	
 	def publish_point(self, x,y,z):
 		p = get_stamped_point(x,y,z)
 
+		#the points read in from the object files are in the "/map" frame of reference
+
 		#wait for current transform to be published		
 		self.tf_listener.waitForTransform("/pantilt_link", "/map", rospy.Time.now(), rospy.Duration(4.0))
-		#transform the point from whatever frame it came from to the pantil's frame
+		#transform the point from the the "/map" frame to the pantil's frame
 		pan_tilt_pt = self.tf_listener.transformPoint("/pantilt_link", p)
 
 		self.point_publisher.publish(pan_tilt_pt)
@@ -317,6 +329,8 @@ class SoundBoard:
 					self.build_sentence(copy(self.questions[q]))
 			elif a== 1:
 				self.prompt_misc()
+			elif a== 1:
+				self.prompt_commands()
 			else:
 				break
 

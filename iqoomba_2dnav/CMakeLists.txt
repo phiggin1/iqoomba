@@ -8,8 +8,6 @@ project(iqoomba_2dnav)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  create_autonomy
-  iai_kinect2
   iqoomba_tf_setup
   move_base
 )
