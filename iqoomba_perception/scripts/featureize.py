@@ -40,7 +40,6 @@ get_features():
 
 	for l in lines[-53:-2]:
 		s = l.split('=')
-		print(s[1])
 		features.append(float(s[1])
 		
 

@@ -41,7 +41,7 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 			filewriteinfo.append( [outfile, classnum ] )
 			count +=1	
 		else:
-			print "No digit in that string"
+			print("No digit in that string")
 			return(-1)
 	return (filewriteinfo)
 
@@ -129,10 +129,10 @@ def fuse_color_depth(data_dir = '../data'):
 	IMSIZE=(256,256)
 	namemap = getobjclasses()
 	file_info = process_comboimages(combo_path, chandic, num_channels, output_dir) 
-	print "Number of images processed:", len(file_info) 
+	print("Number of images processed:", len(file_info) )
 	oname = output_dir+'/testlist.txt'
 	file = open(oname, "w")
 	for fnm in file_info :
 		file.write(fnm[0].strip("/") +' %d\n'  % (fnm[1]))
 	file.close()
-	print "Wrote ", oname
+	print("Wrote ", oname)
