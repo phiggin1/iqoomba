@@ -7,7 +7,7 @@ DATA_PATH = "/home/phiggin1/deep_rgbd_v01.2/data/"
 CAFFE_PATH = "/home/phiggin1/deep_rgbd_v01.2/rgbdnet_caffe/build/tools/"
 MODEL_PATH = "/home/phiggin1/deep_rgbd_v01.2/caffe_models/"
 
-get_features():
+def get_features():
 
 	output = run([
 		"rm",
