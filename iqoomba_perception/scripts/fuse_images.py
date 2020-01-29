@@ -16,6 +16,9 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 	count = 0
 	ftotsize = len(allfilesinfo[0])
 	imgtmp = np.zeros(  (IMSIZE[0],IMSIZE[1]*totchan), dtype='uint8' )
+
+	print(allfilesinfo)
+
 	for i in range(ftotsize):
 		offc = 0
 		for l in range(len(allfilesinfo)):
@@ -135,7 +138,7 @@ def fuse_color_depth(data_dir = '../data'):
 
 	namemap = getobjclasses()
 	file_info = process_comboimages(combo_path, chandic, num_channels, output_dir) 
-	#print("Number of images processed:", len(file_info) )
+	print("Number of images processed:", len(file_info) )
 	oname = output_dir+'/testlist.txt'
 	file = open(oname, "w")
 	for fnm in file_info :
