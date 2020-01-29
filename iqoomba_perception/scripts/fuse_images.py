@@ -16,9 +16,9 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 	count = 0
 	ftotsize = len(allfilesinfo[0])
 	imgtmp = np.zeros(  (IMSIZE[0],IMSIZE[1]*totchan), dtype='uint8' )
-	for i in xrange(ftotsize):
+	for i in range(ftotsize):
 		offc = 0
-		for l in xrange(len(allfilesinfo)):
+		for l in range(len(allfilesinfo)):
 			tfile = allfilesinfo[l][i]
 			img = cv2.imread(tfile, -1);
 			if(len(img.shape)==2):
@@ -27,7 +27,7 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 				newimg = scaleit3(img)
 			if(len(img.shape)==2):
 				newimg = cv2.applyColorMap(newimg, cv2.COLORMAP_JET)
-			for c in xrange(newimg.shape[2]):
+			for c in range(newimg.shape[2]):
 				imgtmp[:,offc:offc+IMSIZE[1]] = newimg[:,:,c]
 				offc += IMSIZE[0]
 		fname= ntpath.basename(tfile)
