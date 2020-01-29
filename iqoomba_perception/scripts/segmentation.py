@@ -134,7 +134,7 @@ class Segmentation:
 			converter = PointCloudToImages('/home/phiggin1/deep_rgbd_v01.2/data/')
 			converter.convert(obj)
 			fuse_color_depth()
-			features = get_features()
+			#features = get_features()
 			
 
 			self.pub.publish(pc_msg)
