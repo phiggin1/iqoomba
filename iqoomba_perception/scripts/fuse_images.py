@@ -8,6 +8,7 @@ import json
 import glob
 from pprint import pprint
 
+IMSIZE=(256,256)
 
 # ~-~-~  ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ 
 def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
@@ -126,7 +127,7 @@ def fuse_color_depth(data_dir = '../data'):
 	assert len(rgb_im_paths) == len(depth_im_paths), \
              'Image pairs in ../data/rgb and ../data/depth must match'
 	combo_path = [rgb_im_paths, depth_im_paths]
-	IMSIZE=(256,256)
+
 	namemap = getobjclasses()
 	file_info = process_comboimages(combo_path, chandic, num_channels, output_dir) 
 	print("Number of images processed:", len(file_info) )

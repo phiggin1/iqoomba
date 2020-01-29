@@ -65,12 +65,12 @@ class PointCloudToImages():
 			depth_arr[v_depth][u_depth] = ((d- MIN_DIST) / (MAX_DIST - MIN_DIST)) * 255
 
 		depth_img = Image.fromarray(depth_arr, 'L')
-		#depth_img.save(depth_path)
-		depth_img.show()
+		depth_img.save(depth_path)
+		#depth_img.show()
 
 		color_img = Image.fromarray(color_arr, 'RGB')
-		#depth_img.save(rgb_path)
-		color_img.show()
+		depth_img.save(rgb_path)
+		#color_img.show()
 		print("Wrote depth and color to ",rgb_path," and ",depth_path)
 
 
