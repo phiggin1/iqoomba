@@ -134,7 +134,7 @@ class Segmentation:
 			converter.convert(obj)
 			fuse_color_depth()
 			features = get_features()
-			
+			print(features)
 
 			self.pub.publish(pc_msg)
 
