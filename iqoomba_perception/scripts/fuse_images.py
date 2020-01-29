@@ -58,8 +58,8 @@ def scaleit_experimental(img):
 	imsz = img.shape
 	mxdim  = np.max(imsz)
 
-	offs_col = (mxdim - imsz[1])/2
-	offs_row = (mxdim - imsz[0])/2	
+	offs_col = int( (mxdim - imsz[1])/2 )
+	offs_row = int( (mxdim - imsz[0])/2 )
 	nchan = 1
 	if(len(imsz)==3):
 		nchan = imsz[2]
@@ -107,7 +107,7 @@ def scaleit3(img):
 	print(type(offs_row), type(offs_row+imszn[0]), type(offs_col), type(offs_col+imszn[1]) )
 
 	# take cols
-	#imgcanvas[offs_row:offs_row+imszn[0], offs_col:offs_col+imszn[1]] = imrange_rescale.reshape( (imszn[0],imszn[1],nchan) )
+	imgcanvas[offs_row:offs_row+imszn[0], offs_col:offs_col+imszn[1]] = imrange_rescale.reshape( (imszn[0],imszn[1],nchan) )
 	return (imgcanvas)
 
 # ~-~-~  ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ 
