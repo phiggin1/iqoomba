@@ -44,7 +44,7 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 		else:
 			print("No digit in that string")
 			return(-1)
-	return (filewriteinfo)
+	return filewriteinfo
 
 # ~-~-~  ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ 
 # The colorized depth image
