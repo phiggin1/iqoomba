@@ -99,10 +99,8 @@ def scaleit3(img):
 
 	# FILL IT
 	imgcanvas = np.zeros(  (IMSIZE[0],IMSIZE[1],nchan), dtype='uint8' )
-	offs_col = (IMSIZE[1] - imszn[1])/2
-	offs_row = (IMSIZE[0] - imszn[0])/2
-
-	print(offs_col, offs_row)
+	offs_col = int( (IMSIZE[1] - imszn[1])/2 )
+	offs_row = int( (IMSIZE[0] - imszn[0])/2 )
 
 	# take cols
 	imgcanvas[offs_row:offs_row+imszn[0], offs_col:offs_col+imszn[1]] = imrange_rescale.reshape( (imszn[0],imszn[1],nchan) )
