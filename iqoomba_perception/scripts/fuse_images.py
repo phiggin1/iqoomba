@@ -45,6 +45,7 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 			print("No digit in that string")
 			return(-1)
 
+	return filewriteinfo
 
 # ~-~-~  ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ 
 # The colorized depth image
@@ -133,8 +134,8 @@ def fuse_color_depth(data_dir = '../data'):
 	combo_path = [rgb_im_paths, depth_im_paths]
 
 	namemap = getobjclasses()
-	process_comboimages(combo_path, chandic, num_channels, output_dir) 
-
+	file_info = process_comboimages(combo_path, chandic, num_channels, output_dir) 
+	#print("Number of images processed:", len(file_info) )
 	oname = output_dir+'/testlist.txt'
 	file = open(oname, "w")
 	for fnm in file_info :
