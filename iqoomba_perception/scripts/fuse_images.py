@@ -38,8 +38,9 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 		cv2.imwrite(outfile, imgtmp)
 		classname = tfile.split("/")[-1:][0]
 
-		print(classname)
 
+		filewriteinfo.append( [outfile, 0] )
+		'''
 		m = re.search("\d", classname)
 		if m:
 			namekey = getobjclasses()
@@ -49,7 +50,7 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 		else:
 			print("No digit in that string")
 			return(-1)
-
+		'''
 	return filewriteinfo
 
 # ~-~-~  ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ ~-~-~ 
@@ -144,6 +145,7 @@ def fuse_color_depth(data_dir = '../data'):
 	oname = output_dir+'/testlist.txt'
 	file = open(oname, "w")
 	for fnm in file_info :
+		print(fnm)
 		file.write(fnm[0].strip("/") +' %d\n'  % (fnm[1]))
 	file.close()
 	print("Wrote ", oname)
