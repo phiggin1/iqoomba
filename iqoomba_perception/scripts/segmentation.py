@@ -17,7 +17,6 @@ from visualization_msgs.msg import Marker, MarkerArray
 
 from pcl_helper import ros_to_pcl, pcl_to_ros, rgb_to_float, float_to_rgb
 
-
 from pc_to_color_depth import PointCloudToImages
 from fuse_images import fuse_color_depth
 from featureize import get_features
@@ -134,7 +133,8 @@ class Segmentation:
 			converter = PointCloudToImages('/home/phiggin1/deep_rgbd_v01.2/data/')
 			converter.convert(obj)
 			fuse_color_depth()
-			#features = get_features()
+			#features = 
+			get_features()
 			
 
 			self.pub.publish(pc_msg)
