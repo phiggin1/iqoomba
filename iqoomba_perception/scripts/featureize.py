@@ -41,4 +41,4 @@ def get_features():
 		s = l.split('=')
 		features.append(float(s[1])
 
-	return features
+	print(features)
