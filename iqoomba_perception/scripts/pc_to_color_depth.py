@@ -32,8 +32,8 @@ class PointCloudToImages():
 
 
 	def convert(self, cloud):
-		rgb_path = self.data_path+"rgb/rgb.png"
-		depth_path = self.data_path+"depth/depth.png"
+		rgb_path = self.data_path+"rgb/rgb_0.png"
+		depth_path = self.data_path+"depth/depth_0.png"
 		#print(self.depth_cam_info, self.rgb_cam_info)
 		w_depth = self.depth_cam_info.width
 		h_depth = self.depth_cam_info.height
