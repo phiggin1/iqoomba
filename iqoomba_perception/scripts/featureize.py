@@ -8,7 +8,6 @@ CAFFE_PATH = "/home/phiggin1/deep_rgbd_v01.2/rgbdnet_caffe/build/tools/"
 MODEL_PATH = "/home/phiggin1/deep_rgbd_v01.2/caffe_models/"
 
 def get_features():
-
 	output = run([
 		"rm",
 		"-rf",
@@ -41,6 +40,5 @@ def get_features():
 	for l in lines[-53:-2]:
 		s = l.split('=')
 		features.append(float(s[1])
-		
 
 	return features
