@@ -18,6 +18,10 @@ from visualization_msgs.msg import Marker, MarkerArray
 from pcl_helper import ros_to_pcl, pcl_to_ros, rgb_to_float, float_to_rgb
 
 
+from pc_to_color_depth import PointCloudToImages
+from fuse_images import fuse_color_depth
+from featureize import get_features
+
 def distance_point_to_plane(p, model):
     return ( model[0]*p[0] + model[1]*p[1] + model[2]*p[2] + model[3] );
 
@@ -63,11 +67,10 @@ def get_marker(i, label, frame_id, x, y, z):
 	return marker
 
 class Segmentation:
-	def pointcloud_cb(self, cloud):
-		self.get_clusters(cloud)
-
-
 	def get_clusters(self, cloud):
+
+		print("point cloud size = ",len(cloud.data), " bytes")
+
 		marker_array = MarkerArray()
 
 		pcl_cloud = ros_to_pcl(cloud)
@@ -128,6 +131,12 @@ class Segmentation:
 
 			pc_msg = pcl_to_ros(obj, stamp=cloud.header.stamp, frame_id=cloud.header.frame_id, seq=cloud.header.seq)
 
+			converter = PointCloudToImages('/home/phiggin1/deep_rgbd_v01.2/data/')
+			converter.convert(obj)
+			fuse_color_depth()
+			features = get_features()
+			
+
 			self.pub.publish(pc_msg)
 
 			time.sleep(5)
@@ -137,7 +146,7 @@ class Segmentation:
 	def __init__(self):
 		rospy.init_node('ransac_filter', anonymous=True)
 		self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
-		self.sub = rospy.Subscriber("/objects", PointCloud2, self.pointcloud_cb)
+		self.sub = rospy.Subscriber("/objects", PointCloud2, self.get_clusters)
 		self.obj_markers_pub = rospy.Publisher('/object_markers', MarkerArray, queue_size=10)
 		rospy.spin()
 
