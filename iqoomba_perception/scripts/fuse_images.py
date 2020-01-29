@@ -145,7 +145,6 @@ def fuse_color_depth(data_dir = '../data'):
 	oname = output_dir+'/testlist.txt'
 	file = open(oname, "w")
 	for fnm in file_info :
-		print(fnm)
 		file.write(fnm[0].strip("/") +' %d\n'  % (fnm[1]))
 	file.close()
 	print("Wrote ", oname)

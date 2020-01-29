@@ -1,8 +1,8 @@
 <launch>
 
   <include file="$(find iqoomba_perception)/launch/box_filter.launch" >  </include>
-  <node pkg="iqoomba_perception" type="ransac.py" name="ransav" output="screen"></node>
-  <node pkg="iqoomba_perception" type="segmentation.py" name="segmentation" output="screen"></node>
-  <node pkg="iqoomba_perception" type="marker_transform.py" name="marker_transform" output="screen"></node>
+  <node pkg="iqoomba_perception" type="ransac.py" name="ransac" output="screen"></node>
+  <node pkg="iqoomba_perception" type="segmentation_local.py" name="segmentation" output="screen"></node>
+
 
 </launch>

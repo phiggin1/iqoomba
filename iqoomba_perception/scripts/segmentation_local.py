@@ -81,7 +81,7 @@ class Segmentation:
 		tree = xyz_pc.make_kdtree()
 
 		ec = xyz_pc.make_EuclideanClusterExtraction()
-		ec.set_ClusterTolerance (0.01)
+		ec.set_ClusterTolerance (0.025)
 		ec.set_MinClusterSize (100)
 		ec.set_MaxClusterSize (25000)
 		ec.set_SearchMethod (tree)
@@ -91,8 +91,8 @@ class Segmentation:
 		#for all j clusters
 		print("# clusters ", len(cluster_indices))
 		for j, indices in enumerate(cluster_indices):
-			tmp_indx = []
-			print("# points ", len(indices))
+			print("Cluster", j ,": # points ", len(indices))
+			'''
 			min_x = 999.9
 			max_x = -999.9
 			min_y = 999.9
@@ -101,7 +101,7 @@ class Segmentation:
 			max_z = -999.9
 			#for all points in the cluster j
 			for i, indice in enumerate(indices):
-				tmp_indx.append(indice)
+
 				if xyz_pc[indice][0] < min_x:
 					min_x = xyz_pc[indice][0]
 				elif xyz_pc[indice][0] > max_x:
@@ -116,12 +116,20 @@ class Segmentation:
 					min_z = xyz_pc[indice][2]
 				elif xyz_pc[indice][2] > max_z:
 					max_z = xyz_pc[indice][2]
+			'''
+			sum_x = 0
+			sum_y = 0
+			sum_z = 0
+			#for all points in the cluster j
+			for i, indice in enumerate(indices):
+				sum_x = sum_x + xyz_pc[indice][0]
+				sum_y = sum_y + xyz_pc[indice][1]
+				sum_z = sum_z + xyz_pc[indice][2]
 
-			x = (min_x + max_x)/2
-			y = (min_y + max_y)/2
-			z = (min_z + max_z)/2
 
-			p = get_stamped_point(x, y, z, cloud.header.frame_id)
+			x = sum_x/len(indices)
+			y = sum_y/len(indices)
+			z = sum_z/len(indices)
 
 			label = "obj_" + str(j)
 			marker_array.markers.append(get_marker(j, label, cloud.header.frame_id, x, y, z))
@@ -129,22 +137,14 @@ class Segmentation:
 			obj = pcl_cloud.extract(indices, negative=False)
 
 			pc_msg = pcl_to_ros(obj, stamp=cloud.header.stamp, frame_id=cloud.header.frame_id, seq=cloud.header.seq)
-
-			converter = PointCloudToImages('/home/phiggin1/deep_rgbd_v01.2/data/')
-			converter.convert(obj)
-			fuse_color_depth()
-			features = get_features()
-
 			self.pub.publish(pc_msg)
-
-			print("object at ", p, "\nwith features: ",features)
 
 		self.obj_markers_pub.publish(marker_array)
 
 	def __init__(self):
 		rospy.init_node('ransac_filter', anonymous=True)
-		self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
 		self.sub = rospy.Subscriber("/objects", PointCloud2, self.get_clusters)
+		self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
 		self.obj_markers_pub = rospy.Publisher('/object_markers', MarkerArray, queue_size=10)
 		rospy.spin()
 
