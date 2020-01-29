@@ -17,7 +17,6 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 	ftotsize = len(allfilesinfo[0])
 	imgtmp = np.zeros(  (IMSIZE[0],IMSIZE[1]*totchan), dtype='uint8' )
 
-	print(allfilesinfo)
 
 	for i in range(ftotsize):
 		offc = 0
@@ -38,6 +37,9 @@ def process_comboimages(allfilesinfo, chandic, totchan, SAVEDIR):
 		outfile = os.path.abspath(outfile)
 		cv2.imwrite(outfile, imgtmp)
 		classname = tfile.split("/")[-1:][0]
+
+		print(classname)
+
 		m = re.search("\d", classname)
 		if m:
 			namekey = getobjclasses()
