@@ -1,5 +1,5 @@
 <launch>
-  <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /points2 1 /pc_throttled" />
+  <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /points2 5 /pc_throttled" />
 
   <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
   <!-- Run a passthrough filter to clean NaNs -->

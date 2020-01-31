@@ -73,13 +73,6 @@ def get_goal_pose(theta):
 
 	return goal
 
-def distance(a, b):
-	dist = math.sqrt(
-		(a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2
-	)
-
-	return dist
-
 class SoundBoard:
 	def __init__(self):
 		'''
@@ -113,7 +106,7 @@ class SoundBoard:
 			"here"
 		]
 
-		'''
+
 		self.objects = []
 		#TODO get rid of hard path link
 		f = open("/home/iral/objects.txt", 'r')
@@ -121,7 +114,6 @@ class SoundBoard:
 			label,x,y,z = line.split(',')
 			self.objects.append( (label, float(x), float(y) ,float(z)) )
 		f.close()
-		'''
 
 		rospy.init_node('experiment', anonymous = True)
 
@@ -136,44 +128,12 @@ class SoundBoard:
 
 		self.tf_listener = tf.TransformListener()
 
-		self.sub = rospy.Subscriber("object_markers", MarkerArray, self.objects_cb)
-		self.objects = []
-
 
 		context = zmq.Context()
 		self.socket = context.socket(zmq.PAIR)
 		self.socket.connect("tcp://130.85.202.6:5555")
 
 		#rospy.sleep(1)
-
-	def object_cb(self, marker_array):
-		new_objects = []
-		for marker in marker_array:
-			new_objects.append( (marker.pose.position.x, marker.pose.position.y, marker.pose.position.z, marker.header.frame_id) )
- 		
-		#if robot has not seen any objects
-		if len(self.objects) == 0:
-			self.objects = objects
-		#robot has seen objects
-		else:
-			tmp_old_indxs = range(len(self.objects))
-			tmp_new_indxs = range(len(new_objects))
-
-			for i, new_obj in enumerate(new_objects):
-				for j, old_obj in enumerate(self.objects):
-					if distance(old_obj, new_obj) < DISTANCE_THRESHOLD:
-						tmp_old_indxs.remove(j)
-						tmp_new_indxs.remove(i)
-
-			print(i,j)
-
-			if len(tmp_old_indxs) > 0 and len(tmp_new_indxs) == 0:
-				print("case 1")
-			elif len(tmp_old_indxs) == 0 and len(tmp_new_indxs) > 0:
-				print("case 2")
-			elif len(tmp_old_indxs) > 0 and len(tmp_new_indxs) > 0:
-				print("case 3")
-			
 
 	def high_level_prompt(self):
 		print("0: Question")
@@ -256,10 +216,10 @@ class SoundBoard:
 				objs.append(obj)
 				need_laser = True
 			elif w == LABEL:
-				label = input("object name: ")
+				obj = self.prompt_objects()
 				if i > 0:
 					if question[i-1] != POINT:
-						question[i-1] += " " + label
+						question[i-1] += " " + self.objects[obj][0]
 						del question[i]
 
 		#get the robot the say the question
@@ -290,8 +250,8 @@ class SoundBoard:
 			#point at objects
 			if i == POINT:
 				#self.face_point(objs[o][1], objs[o][2], objs[o][3])
-				if DEBUG: print('DEBUG pointing at object: %d' % o)
-				self.publish_point(self.objects[objs[o]][0], self.objects[objs[o]][1], self.objects[objs[o]][2])
+				if DEBUG: print('DEBUG pointing at: %s' % self.objects[objs[o]][0])
+				self.publish_point(self.objects[objs[o]][1], self.objects[objs[o]][2], self.objects[objs[o]][3])
 				if DEBUG: print("DEBUG: LASER_ON")
 				laser_on = True
 				self.socket.send(LASER_ON)
