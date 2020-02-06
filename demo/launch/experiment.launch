@@ -1,5 +1,10 @@
 <launch>
 
+  #bring up robot, navigation, and perception
+  <include file="$(find iqoomba_2dnav)/launch/iqoomba_configuration.launch"> </include> 
+  <include file="$(find iqoomba_2dnav)/launch/move_base.launch"> </include>
+  <include file="$(find iqoomba_perception)/launch/perception.launch"> </include>
+
   #Text to speech using amazon polly
   <arg name="config_file" default="$(find tts)/config/sample_configuration.yaml" />
   <include file="$(find tts)/launch/tts_polly.launch" >

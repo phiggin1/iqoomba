@@ -9,7 +9,7 @@ import tf
 import math
 import zmq
 import numpy as np
-
+import random
 from copy import copy
 
 from sound_play.libsoundplay import SoundClient
@@ -104,7 +104,7 @@ class SoundBoard:
 
 
 		self.objects = []
-		#TODO get rid of hard path link
+		#TODO get rid of hard path link`
 		f = open("/home/iral/objects.txt", 'r')
 		for line in f:
 			label,x,y,z = line.split(',')
@@ -124,13 +124,16 @@ class SoundBoard:
 
 		self.tf_listener = tf.TransformListener()
 
-
 		context = zmq.Context()
 		self.socket = context.socket(zmq.PAIR)
 		self.socket.connect("tcp://130.85.202.6:5555")
 
+                self.log = open(str(rospy.Time.now())+".log" , "w")
+
+
 	def __del__(self):
-		self.socket.send(LASER_OFF)
+		self.log.close()
+                self.socket.send(LASER_OFF)
 
 	def high_level_prompt(self):
 		print("0: Question")
@@ -230,13 +233,16 @@ class SoundBoard:
 			repeat = raw_input("Repeat(y/n):")
 
 		#give an affermation so the subject doesn't ramble on too much
-		response = self.statements[random.randint(0, len(self.statements)]
+		response = self.statements[random.randint(0, len(self.statements))]
 		if DEBUG: print('DEBUG Saying: %s' % response)
-		goal = SpeechGoal()
+                self.say(response)
+                '''
+                goal = SpeechGoal()
 		goal.text = response
 		goal.metadata = ''
 		self.soundhandle.send_goal(goal)
 		self.soundhandle.wait_for_result()
+                '''
 
 	#speak the sentance and point the laser at objects
 	def say_sentance(self, question, objs):
@@ -257,13 +263,14 @@ class SoundBoard:
 			#speak
 			else:
 				if DEBUG: print('DEBUG Saying: %s' % i)
-				goal = SpeechGoal()
+                                self.say(i)
+                                '''
+                                goal = SpeechGoal()
 				goal.text = i
 				goal.metadata = ''
-
 				self.soundhandle.send_goal(goal)
 				self.soundhandle.wait_for_result()
-
+                                '''
 
 		if laser_on:
 			time.sleep(POINT_TIME)
@@ -319,12 +326,16 @@ class SoundBoard:
 		#give an affermation so the subject doesn't ramble on too much
 		response = "Can you tell me about the objects on the table."
 		if DEBUG: print('DEBUG Saying: %s' % response)
-		goal = SpeechGoal()
+		'''
+                goal = SpeechGoal()
 		goal.text = response
 		goal.metadata = ''
 		self.soundhandle.send_goal(goal)
 		self.soundhandle.wait_for_result()
-		a = 0		
+                '''
+                self.say(response)
+
+                a = 0		
 		while True:
 			'''
 			a = self.high_level_prompt()
@@ -344,7 +355,14 @@ class SoundBoard:
 			if q >=0 and q < len(self.questions):
 				print(self.format_question(self.questions[q]))
 				self.build_sentence(copy(self.questions[q]))
+        def say(self, s):
+                goal = SpeechGoal()
+                goal.text = s
+                goal.metadata = ''
+                self.soundhandle.send_goal(goal)
+                self.soundhandle.wait_for_result()
 
+                self.log.write(str(rospy.Time.now()) + ":" + s+"\n")
 
 if __name__ == '__main__':
 	sb = SoundBoard()
