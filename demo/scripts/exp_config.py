@@ -54,7 +54,7 @@ class ExpConfig:
 		self.tf_listener = tf.TransformListener()
 		
 		self.marker_publisher = rospy.Publisher('marker', Marker, queue_size=10)
-		self.f = open("objects.txt", 'w')
+		self.f = open("objects.csv", 'w')
 
 		#subscribe to the point clicked topic and register callback method
 		rospy.Subscriber("clicked_point", PointStamped, self.callback)

@@ -44,7 +44,7 @@ def send_markers():
 
 	marker_array = MarkerArray()
 
-	f = open("/home/iral/objects.txt", 'r')
+	f = open("/home/iral/objects.csv", 'r')
 	count = 0
 	for line in f:
 		label,x,y,z = line.split(',')

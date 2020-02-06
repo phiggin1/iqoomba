@@ -105,7 +105,7 @@ class SoundBoard:
 
 		self.objects = []
 		#TODO get rid of hard path link`
-		f = open("/home/iral/objects.txt", 'r')
+		f = open("/home/iral/objects.csv", 'r')
 		for line in f:
 			label,x,y,z = line.split(',')
 			self.objects.append( (label, float(x), float(y) ,float(z)) )
