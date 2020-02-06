@@ -1,5 +1,5 @@
 <launch>
-  <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /points2 5 /pc_throttled" />
+  <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /points2 0.5 /pc_throttled" />
 
   <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
   <!-- Run a passthrough filter to clean NaNs -->
@@ -9,7 +9,7 @@
     <rosparam>
       filter_field_name: x
       filter_limit_min: -0.4
-      filter_limit_max: 0.2
+      filter_limit_max: 0.4
       filter_limit_negative: False
     </rosparam>
   </node>
@@ -19,8 +19,8 @@
     <remap from="~output" to="/filtered_y" />
     <rosparam>
       filter_field_name: y
-      filter_limit_min: -0.2
-      filter_limit_max: 0.2
+      filter_limit_min: -0.25
+      filter_limit_max: 0.25
       filter_limit_negative: False
     </rosparam>
   </node>
@@ -31,7 +31,7 @@
     <rosparam>
       filter_field_name: z
       filter_limit_min: 0.1
-      filter_limit_max: 1.0
+      filter_limit_max: 2.0
       filter_limit_negative: False
     </rosparam>
   </node>

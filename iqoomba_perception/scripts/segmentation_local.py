@@ -77,46 +77,24 @@ class Segmentation:
 		# since pointcloud_xyzrgb does not support make_EuclideanClusterExtraction
 		xyz_pc = pcl.PointCloud()
 		xyz_pc.from_list( [ x[:3] for x in pcl_cloud.to_list() ] )
-
 		tree = xyz_pc.make_kdtree()
-
+	
+		t1 =  time.clock()
 		ec = xyz_pc.make_EuclideanClusterExtraction()
-		ec.set_ClusterTolerance (0.025)
-		ec.set_MinClusterSize (100)
-		ec.set_MaxClusterSize (25000)
+		ec.set_ClusterTolerance (0.005)
+		ec.set_MinClusterSize (1000)
+		ec.set_MaxClusterSize (20000)
 		ec.set_SearchMethod (tree)
 		cluster_indices = ec.Extract()
+		t2 =  time.clock()
 
-		indx = []
+		print("ECE took ", t2-t1)
+
 		#for all j clusters
 		print("# clusters ", len(cluster_indices))
 		for j, indices in enumerate(cluster_indices):
 			print("Cluster", j ,": # points ", len(indices))
-			'''
-			min_x = 999.9
-			max_x = -999.9
-			min_y = 999.9
-			max_y = -999.9		
-			min_z = 999.9
-			max_z = -999.9
-			#for all points in the cluster j
-			for i, indice in enumerate(indices):
 
-				if xyz_pc[indice][0] < min_x:
-					min_x = xyz_pc[indice][0]
-				elif xyz_pc[indice][0] > max_x:
-					max_x = xyz_pc[indice][0]
-
-				if xyz_pc[indice][1] < min_y:
-					min_y = xyz_pc[indice][1]
-				elif xyz_pc[indice][1] > max_y:
-					max_y = xyz_pc[indice][1]
-
-				if xyz_pc[indice][2] < min_z:
-					min_z = xyz_pc[indice][2]
-				elif xyz_pc[indice][2] > max_z:
-					max_z = xyz_pc[indice][2]
-			'''
 			sum_x = 0
 			sum_y = 0
 			sum_z = 0

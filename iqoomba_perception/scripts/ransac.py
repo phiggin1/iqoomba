@@ -30,6 +30,9 @@ class RansacFilter:
 
 	def ground_filter(self, cloud):
 		pcl_cloud = ros_to_pcl(cloud)
+
+		t1 =  time.clock()
+		'''
 		seg = pcl_cloud.make_segmenter_normals(ksearch=5)
 		seg.set_optimize_coefficients(True)
 		seg.set_model_type(pcl.SACMODEL_NORMAL_PLANE)
@@ -37,6 +40,16 @@ class RansacFilter:
 		seg.set_method_type(pcl.SAC_RANSAC)
 		seg.set_max_iterations(10)
 		seg.set_distance_threshold(0.03)
+		'''
+
+		seg = pcl_cloud.make_segmenter()
+		seg.set_optimize_coefficients(True)
+		seg.set_model_type(pcl.SACMODEL_PLANE)
+		seg.set_method_type(pcl.SAC_RANSAC)
+		seg.set_distance_threshold(0.03)
+
+
+
 		indices, model = seg.segment()
 
 		cnt = 0
@@ -51,6 +64,8 @@ class RansacFilter:
 				ind.append(i)
 
 			i = i + 1
+		t2 =  time.clock()
+		print("RANSAC took ", t2-t1)
 
 		print("model:", model)
 		print("org size", cloud.width*cloud.height, "ransac size", cnt)

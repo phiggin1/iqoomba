@@ -30,7 +30,6 @@ LASER_OFF = "LASER_OFF"
 
 POINT_TIME = 5.0
 
-
 '''
 "What is this [robot points at specific object]?",
 "Where is the _____?",
@@ -75,7 +74,7 @@ def get_goal_pose(theta):
 
 class SoundBoard:
 	def __init__(self):
-		'''
+
 		self.questions = [
 			["What is this", POINT], 
 			["Where is the", LABEL], 
@@ -90,20 +89,17 @@ class SoundBoard:
 			["How is this", POINT, "different from that", POINT],
 			["Could you sort all the objects by how useful you would find them"]
 		]
-		'''
 
+		'''
 		self.questions = [
 			["How are this", POINT, "and that", POINT, " similar"],
 			[POINT, "How are this", POINT, "and that similar"]
 		]
-
+		'''
 
 		self.statements = [
 			"yes",
-			"no",
 			"thank you",
-			"how are you?",
-			"here"
 		]
 
 
@@ -133,11 +129,13 @@ class SoundBoard:
 		self.socket = context.socket(zmq.PAIR)
 		self.socket.connect("tcp://130.85.202.6:5555")
 
-		#rospy.sleep(1)
+	def __del__(self):
+		self.socket.send(LASER_OFF)
 
 	def high_level_prompt(self):
 		print("0: Question")
 		print("1: Statement")
+		print("2: Commands")
 		print("else: Quit")
 
 		return input()
@@ -199,8 +197,8 @@ class SoundBoard:
 			if DEBUG: print("DEBUG: LASER_ON")
 			self.socket.send(LASER_ON)
 		elif cmd == 1:
-			if DEBUG: print("DEBUG: LASER_ON")
-			self.socket.send(LASER_ON)
+			if DEBUG: print("DEBUG: LASER_OFF")
+			self.socket.send(LASER_OFF)
 	
 	#given a question prompt the user for all the required information needed
 	def build_sentence(self, question):
@@ -232,7 +230,7 @@ class SoundBoard:
 			repeat = raw_input("Repeat(y/n):")
 
 		#give an affermation so the subject doesn't ramble on too much
-		response = "OK"
+		response = self.statements[random.randint(0, len(self.statements)]
 		if DEBUG: print('DEBUG Saying: %s' % response)
 		goal = SpeechGoal()
 		goal.text = response
@@ -318,21 +316,34 @@ class SoundBoard:
 		self.point_publisher.publish(pan_tilt_pt)
 
 	def run(self):
+		#give an affermation so the subject doesn't ramble on too much
+		response = "Can you tell me about the objects on the table."
+		if DEBUG: print('DEBUG Saying: %s' % response)
+		goal = SpeechGoal()
+		goal.text = response
+		goal.metadata = ''
+		self.soundhandle.send_goal(goal)
+		self.soundhandle.wait_for_result()
 		a = 0		
 		while True:
+			'''
 			a = self.high_level_prompt()
 			if a == 0:
-				
 				q = self.prompt_questions()
 				if q >=0 and q < len(self.questions):
 					print(self.format_question(self.questions[q]))
 					self.build_sentence(copy(self.questions[q]))
 			elif a== 1:
 				self.prompt_misc()
-			elif a== 1:
+			elif a== 2:
 				self.prompt_commands()
 			else:
 				break
+			'''
+			q = self.prompt_questions()
+			if q >=0 and q < len(self.questions):
+				print(self.format_question(self.questions[q]))
+				self.build_sentence(copy(self.questions[q]))
 
 
 if __name__ == '__main__':
