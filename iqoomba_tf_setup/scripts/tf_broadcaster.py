@@ -15,7 +15,7 @@ if __name__ == '__main__':
         kinect_to_pantilt.header.frame_id = "camera_base"
         kinect_to_pantilt.child_frame_id = "pantilt_link"
 
-        kinect_to_pantilt.transform.translation.x = 0.0
+        kinect_to_pantilt.transform.translation.x = -0.005
         kinect_to_pantilt.transform.translation.y = 0.0
         kinect_to_pantilt.transform.translation.z = 0.035
 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
         base_to_kinect.transform.translation.x = 0.22
         base_to_kinect.transform.translation.y = 0.0
-        base_to_kinect.transform.translation.z = 0.10
+        base_to_kinect.transform.translation.z = 0.11
 
         base_to_kinect.transform.rotation.x = 0.0
         base_to_kinect.transform.rotation.y = 0.0

@@ -112,17 +112,17 @@ class Segmentation:
 			label = "obj_" + str(j)
 			marker_array.markers.append(get_marker(j, label, cloud.header.frame_id, x, y, z))
 
-			obj = pcl_cloud.extract(indices, negative=False)
+			#obj = pcl_cloud.extract(indices, negative=False)
 
-			pc_msg = pcl_to_ros(obj, stamp=cloud.header.stamp, frame_id=cloud.header.frame_id, seq=cloud.header.seq)
-			self.pub.publish(pc_msg)
+			#pc_msg = pcl_to_ros(obj, stamp=cloud.header.stamp, frame_id=cloud.header.frame_id, seq=cloud.header.seq)
+			#self.pub.publish(pc_msg)
 
 		self.obj_markers_pub.publish(marker_array)
 
 	def __init__(self):
 		rospy.init_node('ransac_filter', anonymous=True)
 		self.sub = rospy.Subscriber("/objects", PointCloud2, self.get_clusters)
-		self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
+		#self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
 		self.obj_markers_pub = rospy.Publisher('/object_markers', MarkerArray, queue_size=10)
 		rospy.spin()
 

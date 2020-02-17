@@ -49,12 +49,12 @@ def ros_to_pcl(ros_cloud):
 
 	return pcl_data 
 
-def pcl_to_ros(pcl_array, stamp, frame_id, seq):
+def pcl_to_ros(pcl_array, header):
 	ros_msg = PointCloud2()
 
-	ros_msg.header.stamp = stamp
-	ros_msg.header.frame_id = frame_id
-	ros_msg.header.seq = seq
+	ros_msg.header.stamp = header.stamp
+	ros_msg.header.frame_id = header.frame_id
+	ros_msg.header.seq = header.seq
 
 	ros_msg.height = 1
 	ros_msg.width = pcl_array.size

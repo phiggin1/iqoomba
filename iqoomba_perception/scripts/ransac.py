@@ -10,8 +10,6 @@ import time
 from sensor_msgs import point_cloud2
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2, PointField
-
-
 from pcl_helper import ros_to_pcl, pcl_to_ros, rgb_to_float, float_to_rgb
 
 
@@ -22,8 +20,7 @@ def distance_point_to_plane(p, model):
 class RansacFilter:
 	def pointcloud_cb(self, cloud):
 		filtered_cloud = self.ground_filter(cloud)
-
-		pc_msg = pcl_to_ros(filtered_cloud, stamp=cloud.header.stamp, frame_id=cloud.header.frame_id, seq=cloud.header.seq)
+		pc_msg = pcl_to_ros(filtered_cloud, cloud.header)
 
 		self.pub.publish(pc_msg)
 
@@ -47,7 +44,6 @@ class RansacFilter:
 		seg.set_model_type(pcl.SACMODEL_PLANE)
 		seg.set_method_type(pcl.SAC_RANSAC)
 		seg.set_distance_threshold(0.03)
-
 
 
 		indices, model = seg.segment()
