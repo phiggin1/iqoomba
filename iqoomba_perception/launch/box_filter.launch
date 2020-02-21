@@ -2,38 +2,43 @@
   <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /points2 0.2 /pc_throttled" />
 
   <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
-  <!-- Run a passthrough filter to clean NaNs -->
-  <node pkg="nodelet" type="nodelet" name="passthrough_x" args="load pcl/PassThrough pcl_manager" output="screen">
+<!--
+    Run a passthrough filter to clean NaNs
+    <node pkg="nodelet" type="nodelet" name="voxel" args="load pcl/VoxelGrid /pcl_manager" output="screen">
     <remap from="~input" to="/pc_throttled" />
-    <remap from="~output" to="/filtered_x" />
-    <rosparam>
-      filter_field_name: x
-      filter_limit_min: -0.4
-      filter_limit_max: 0.4
-      filter_limit_negative: False
-    </rosparam>
-  </node>
-  <!-- Run a passthrough filter to clean NaNs -->
-  <node pkg="nodelet" type="nodelet" name="passthrough_y" args="load pcl/PassThrough pcl_manager" output="screen">
-    <remap from="~input" to="/filtered_x" />
-    <remap from="~output" to="/filtered_y" />
-    <rosparam>
-      filter_field_name: y
-      filter_limit_min: -0.15
-      filter_limit_max: 0.15
-      filter_limit_negative: False
-    </rosparam>
-  </node>
-  <!-- Run a passthrough filter to clean NaNs -->
-  <node pkg="nodelet" type="nodelet" name="passthrough_z" args="load pcl/PassThrough pcl_manager" output="screen">
-    <remap from="~input" to="/filtered_y" />
+    <remap from="~output" to="/voxel" />
+      <rosparam>
+        leaf_size: 0.005
+        filter_field_name: z
+        filter_limit_min: 0.1
+        filter_limit_max: 0.6
+      </rosparam>
+    </node>
+-->
+    <node pkg="nodelet" type="nodelet" name="cropbox" args="load pcl/CropBox /pcl_manager" output="screen">
+    <remap from="~input" to="/pc_throttled" />
     <remap from="~output" to="/filtered" />
+      <rosparam>
+        min_x: -0.4
+        max_x: 0.4
+        min_y: -0.15
+        max_y: 0.15
+        min_z: 0.1
+        max_z: 0.6
+      </rosparam>
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="filter_outliers" args="load pcl/StatisticalOutlierRemoval pcl_manager" output="screen">
+    <remap from="~input" to="/objects" />
+    <remap from="~output" to="/objects_filtered" />
     <rosparam>
-      filter_field_name: z
-      filter_limit_min: 0.1
-      filter_limit_max: 0.6
-      filter_limit_negative: False
+        mean_k: 20
+        stddev: 1
+        negative: False
     </rosparam>
   </node>
 
+
 </launch>
+
+<!-- leaf_size: 0.0005 -->

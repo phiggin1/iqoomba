@@ -67,7 +67,6 @@ def get_marker(i, label, frame_id, x, y, z):
 
 class Segmentation:
 	def get_clusters(self, cloud):
-
 		print("point cloud size = ",len(cloud.data), " bytes")
 
 		marker_array = MarkerArray()
@@ -81,9 +80,9 @@ class Segmentation:
 	
 		t1 =  time.clock()
 		ec = xyz_pc.make_EuclideanClusterExtraction()
-		ec.set_ClusterTolerance (0.005)
-		ec.set_MinClusterSize (1000)
-		ec.set_MaxClusterSize (20000)
+		ec.set_ClusterTolerance (0.01)
+		ec.set_MinClusterSize (5000)
+		ec.set_MaxClusterSize (100000)
 		ec.set_SearchMethod (tree)
 		cluster_indices = ec.Extract()
 		t2 =  time.clock()
@@ -112,17 +111,17 @@ class Segmentation:
 			label = "obj_" + str(j)
 			marker_array.markers.append(get_marker(j, label, cloud.header.frame_id, x, y, z))
 
-			#obj = pcl_cloud.extract(indices, negative=False)
+			obj = pcl_cloud.extract(indices, negative=False)
 
-			#pc_msg = pcl_to_ros(obj, stamp=cloud.header.stamp, frame_id=cloud.header.frame_id, seq=cloud.header.seq)
-			#self.pub.publish(pc_msg)
+			pc_msg = pcl_to_ros(obj, cloud.header)
+			self.pub.publish(pc_msg)
 
-		self.obj_markers_pub.publish(marker_array)
+		#self.obj_markers_pub.publish(marker_array)
 
 	def __init__(self):
 		rospy.init_node('ransac_filter', anonymous=True)
-		self.sub = rospy.Subscriber("/objects", PointCloud2, self.get_clusters)
-		#self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
+		self.sub = rospy.Subscriber("/objects_filtered", PointCloud2, self.get_clusters)
+		self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
 		self.obj_markers_pub = rospy.Publisher('/object_markers', MarkerArray, queue_size=10)
 		rospy.spin()
 

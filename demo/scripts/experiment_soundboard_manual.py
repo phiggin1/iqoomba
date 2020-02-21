@@ -99,7 +99,7 @@ class SoundBoard:
 
 		self.statements = [
 			"yes",
-			"thank you",
+			"thank you"
 		]
 
 
@@ -131,7 +131,7 @@ class SoundBoard:
                 self.log = open(str(rospy.Time.now())+".log" , "w")
 
 
-	def __del__(self):
+	def stop(self):
 		self.log.close()
                 self.socket.send(LASER_OFF)
 
@@ -176,20 +176,9 @@ class SoundBoard:
 
 
 	def prompt_misc(self):
-		for i,s in enumerate(self.statements):
-			print(i,": ",s)
-
-		s = input()
-
-		if int(s) >= 0 and int(s) < len(self.statements):
-			if DEBUG: print('DEBUG Saying: %s' % self.statements[s])
-			
-			goal = SpeechGoal()
-			goal.text = self.statements[s]
-			goal.metadata = ''
-
-			self.soundhandle.send_goal(goal)
-			self.soundhandle.wait_for_result()
+		s = raw_input("String to say:")
+		if DEBUG: print('DEBUG Saying: %s' % s)
+		self.say(s)	
 
 	def prompt_commands(self):
 		print("0: Turn laser on")
@@ -233,16 +222,11 @@ class SoundBoard:
 			repeat = raw_input("Repeat(y/n):")
 
 		#give an affermation so the subject doesn't ramble on too much
-		response = self.statements[random.randint(0, len(self.statements))]
+		n = random.randint(0, len(self.statements))
+		print(n, len(self.statements))
+		response = self.statements[n]
 		if DEBUG: print('DEBUG Saying: %s' % response)
                 self.say(response)
-                '''
-                goal = SpeechGoal()
-		goal.text = response
-		goal.metadata = ''
-		self.soundhandle.send_goal(goal)
-		self.soundhandle.wait_for_result()
-                '''
 
 	#speak the sentance and point the laser at objects
 	def say_sentance(self, question, objs):
@@ -264,14 +248,6 @@ class SoundBoard:
 			else:
 				if DEBUG: print('DEBUG Saying: %s' % i)
                                 self.say(i)
-                                '''
-                                goal = SpeechGoal()
-				goal.text = i
-				goal.metadata = ''
-				self.soundhandle.send_goal(goal)
-				self.soundhandle.wait_for_result()
-                                '''
-
 		if laser_on:
 			time.sleep(POINT_TIME)
 			if DEBUG: print("DEBUG: LASER_OFF")
@@ -326,18 +302,11 @@ class SoundBoard:
 		#give an affermation so the subject doesn't ramble on too much
 		response = "Can you tell me about the objects on the table."
 		if DEBUG: print('DEBUG Saying: %s' % response)
-		'''
-                goal = SpeechGoal()
-		goal.text = response
-		goal.metadata = ''
-		self.soundhandle.send_goal(goal)
-		self.soundhandle.wait_for_result()
-                '''
                 self.say(response)
 
                 a = 0		
 		while True:
-			'''
+
 			a = self.high_level_prompt()
 			if a == 0:
 				q = self.prompt_questions()
@@ -349,18 +318,20 @@ class SoundBoard:
 			elif a== 2:
 				self.prompt_commands()
 			else:
+				self.stop()
 				break
 			'''
 			q = self.prompt_questions()
 			if q >=0 and q < len(self.questions):
 				print(self.format_question(self.questions[q]))
 				self.build_sentence(copy(self.questions[q]))
+			'''
         def say(self, s):
                 goal = SpeechGoal()
                 goal.text = s
                 goal.metadata = ''
-                self.soundhandle.send_goal(goal)
-                self.soundhandle.wait_for_result()
+                #self.soundhandle.send_goal(goal)
+                #self.soundhandle.wait_for_result()
 
                 self.log.write(str(rospy.Time.now()) + ":" + s+"\n")
 

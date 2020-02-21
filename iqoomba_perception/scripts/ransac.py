@@ -43,8 +43,7 @@ class RansacFilter:
 		seg.set_optimize_coefficients(True)
 		seg.set_model_type(pcl.SACMODEL_PLANE)
 		seg.set_method_type(pcl.SAC_RANSAC)
-		seg.set_distance_threshold(0.03)
-
+		seg.set_distance_threshold(0.005)
 
 		indices, model = seg.segment()
 
@@ -60,12 +59,14 @@ class RansacFilter:
 				ind.append(i)
 
 			i = i + 1
+
+
 		t2 =  time.clock()
 		print("RANSAC took ", t2-t1)
-
 		print("model:", model)
-		print("org size", cloud.width*cloud.height, "ransac size", cnt)
+		#print("org size", cloud.width*cloud.height, "ransac size", cnt)
 
+		#return pcl_cloud.extract(indices, negative=True)
 		return pcl_cloud.extract(ind, negative=False)
 
 	def __init__(self):

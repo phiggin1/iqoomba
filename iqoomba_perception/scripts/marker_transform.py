@@ -2,7 +2,7 @@
 
 import rospy
 import tf
-from  geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
 
@@ -25,7 +25,6 @@ class MarkerTransform:
 		rospy.spin()
 
 	def marker_cb(self, marker_array):
-		print("cb")
 		for marker in marker_array.markers:
 			p = get_stamped_point(marker.pose.position.x, marker.pose.position.y, marker.pose.position.z, marker.header.frame_id)
 
