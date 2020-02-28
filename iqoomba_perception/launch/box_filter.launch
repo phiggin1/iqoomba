@@ -1,22 +1,21 @@
 <launch>
-  <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /points2 0.2 /pc_throttled" />
+  <node name="pc_throttler" type="throttle" pkg="topic_tools" args="messages /k4a/points2 5 /pc_throttled" />
 
   <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
-<!--
-    Run a passthrough filter to clean NaNs
+
     <node pkg="nodelet" type="nodelet" name="voxel" args="load pcl/VoxelGrid /pcl_manager" output="screen">
     <remap from="~input" to="/pc_throttled" />
     <remap from="~output" to="/voxel" />
       <rosparam>
-        leaf_size: 0.005
+        leaf_size: 0.0025
         filter_field_name: z
         filter_limit_min: 0.1
         filter_limit_max: 0.6
       </rosparam>
     </node>
--->
+
     <node pkg="nodelet" type="nodelet" name="cropbox" args="load pcl/CropBox /pcl_manager" output="screen">
-    <remap from="~input" to="/pc_throttled" />
+    <remap from="~input" to="/voxel" />
     <remap from="~output" to="/filtered" />
       <rosparam>
         min_x: -0.4
@@ -24,21 +23,13 @@
         min_y: -0.15
         max_y: 0.15
         min_z: 0.1
-        max_z: 0.6
+        max_z: 1.6
       </rosparam>
     </node>
 
-    <node pkg="nodelet" type="nodelet" name="filter_outliers" args="load pcl/StatisticalOutlierRemoval pcl_manager" output="screen">
-    <remap from="~input" to="/objects" />
-    <remap from="~output" to="/objects_filtered" />
-    <rosparam>
-        mean_k: 20
-        stddev: 1
-        negative: False
-    </rosparam>
-  </node>
+
 
 
 </launch>
 
-<!-- leaf_size: 0.0005 -->
+

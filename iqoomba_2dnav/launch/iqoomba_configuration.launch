@@ -1,7 +1,7 @@
 <launch>
 
 #bring up the kinect
-<include file="$(find azure_kinect_ros_driver)/launch/driver.launch"></include>
+<include file="$(find azure_kinect_ros_driver)/launch/rectify_test.launch"></include>
 
 #bring up the create
 <arg name="config" default="$(find ca_driver)/config/default.yaml" />

@@ -29,48 +29,48 @@ class RansacFilter:
 		pcl_cloud = ros_to_pcl(cloud)
 
 		t1 =  time.clock()
+		if self.model == None:
+			seg = pcl_cloud.make_segmenter_normals(ksearch=5)
+			seg.set_optimize_coefficients(True)
+			seg.set_model_type(pcl.SACMODEL_NORMAL_PLANE)
+			seg.set_normal_distance_weight(0.1)
+			seg.set_method_type(pcl.SAC_RANSAC)
+			seg.set_max_iterations(10)
+			seg.set_distance_threshold(0.005)
+			_, self.model = seg.segment()
 		'''
-		seg = pcl_cloud.make_segmenter_normals(ksearch=5)
-		seg.set_optimize_coefficients(True)
-		seg.set_model_type(pcl.SACMODEL_NORMAL_PLANE)
-		seg.set_normal_distance_weight(0.1)
-		seg.set_method_type(pcl.SAC_RANSAC)
-		seg.set_max_iterations(10)
-		seg.set_distance_threshold(0.03)
+		if self.model == None:
+			seg = pcl_cloud.make_segmenter()
+			seg.set_optimize_coefficients(True)
+			seg.set_model_type(pcl.SACMODEL_PLANE)
+			seg.set_method_type(pcl.SAC_RANSAC)
+			seg.set_distance_threshold(0.005)
+			_, self.model = seg.segment()
 		'''
-
-		seg = pcl_cloud.make_segmenter()
-		seg.set_optimize_coefficients(True)
-		seg.set_model_type(pcl.SACMODEL_PLANE)
-		seg.set_method_type(pcl.SAC_RANSAC)
-		seg.set_distance_threshold(0.005)
-
-		indices, model = seg.segment()
 
 		cnt = 0
 		i = 0
-		ind = []
+		indices = []
 		for p in pc2.read_points(cloud, skip_nans=True):
-			d = distance_point_to_plane(p, model)
+			d = distance_point_to_plane(p, self.model)
 			#0.005 is a fudge factor to correct for any error in the model
 			#to avoid having any parts of the ground to creep in
 			if d > 0.005:
 				cnt = cnt + 1
-				ind.append(i)
+				indices.append(i)
 
 			i = i + 1
 
-
 		t2 =  time.clock()
 		print("RANSAC took ", t2-t1)
-		print("model:", model)
+		print("model:", self.model)
 		#print("org size", cloud.width*cloud.height, "ransac size", cnt)
 
-		#return pcl_cloud.extract(indices, negative=True)
-		return pcl_cloud.extract(ind, negative=False)
+		return pcl_cloud.extract(indices, negative=False)
 
 	def __init__(self):
 		rospy.init_node('ransac_filter', anonymous=True)
+		self.model = None
 		self.pub = rospy.Publisher('/objects', PointCloud2, queue_size=10)
 		self.sub = rospy.Subscriber("/filtered", PointCloud2, self.pointcloud_cb)
 		rospy.spin()
