@@ -200,7 +200,7 @@ class Segmentation:
 	def __init__(self):
 		rospy.init_node('ransac_filter', anonymous=True)
 		self.objects = None
-		self.sub = rospy.Subscriber("/objects", PointCloud2, self.get_clusters)
+		self.sub = rospy.Subscriber("/objects_filtered", PointCloud2, self.get_clusters)
 		self.pub = rospy.Publisher('/object', PointCloud2, queue_size=10)
 		self.tracked_objects = rospy.Publisher('/tracked_objects', MarkerArray, queue_size=10)
 		rospy.spin()

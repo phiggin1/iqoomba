@@ -28,6 +28,16 @@
     </node>
 
 
+  <node name="statistical_outlier_removal"
+        pkg="nodelet" type="nodelet"
+        args="standalone pcl/StatisticalOutlierRemoval">
+    <remap from="~input" to="/objects" />
+    <remap from="~output" to="/objects_filtered" />
+    <rosparam>
+      mean_k: 10
+      stddev: 0.15
+    </rosparam>
+  </node>
 
 
 </launch>

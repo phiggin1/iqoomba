@@ -30,13 +30,13 @@ class RansacFilter:
 
 		t1 =  time.clock()
 		if self.model == None:
-			seg = pcl_cloud.make_segmenter_normals(ksearch=5)
+			seg = pcl_cloud.make_segmenter_normals(ksearch=10)
 			seg.set_optimize_coefficients(True)
 			seg.set_model_type(pcl.SACMODEL_NORMAL_PLANE)
 			seg.set_normal_distance_weight(0.1)
 			seg.set_method_type(pcl.SAC_RANSAC)
-			seg.set_max_iterations(10)
-			seg.set_distance_threshold(0.005)
+			seg.set_max_iterations(100)
+			seg.set_distance_threshold(0.05)
 			_, self.model = seg.segment()
 		'''
 		if self.model == None:
