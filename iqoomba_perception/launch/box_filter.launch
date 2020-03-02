@@ -10,7 +10,7 @@
         leaf_size: 0.0025
         filter_field_name: z
         filter_limit_min: 0.1
-        filter_limit_max: 0.6
+        filter_limit_max: 1.6
       </rosparam>
     </node>
 
@@ -27,10 +27,7 @@
       </rosparam>
     </node>
 
-
-  <node name="statistical_outlier_removal"
-        pkg="nodelet" type="nodelet"
-        args="standalone pcl/StatisticalOutlierRemoval">
+  <node name="statistical_outlier_removal" pkg="nodelet" type="nodelet" args="standalone pcl/StatisticalOutlierRemoval">
     <remap from="~input" to="/objects" />
     <remap from="~output" to="/objects_filtered" />
     <rosparam>
