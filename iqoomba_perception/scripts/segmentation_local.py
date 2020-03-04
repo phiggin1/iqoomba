@@ -21,7 +21,7 @@ from pc_to_color_depth import PointCloudToImages
 from fuse_images import fuse_color_depth
 from featureize import get_features
 
-THRESHOLD  = 0.0125
+THRESHOLD  = 0.005
 
 def distance_point_to_plane(p, model):
     return ( model[0]*p[0] + model[1]*p[1] + model[2]*p[2] + model[3] );
@@ -93,7 +93,7 @@ def find_closest(old_obj, new_objects):
 
 class Segmentation:
 	def get_clusters(self, cloud):
-		print("point cloud size = ",len(cloud.data), " bytes")
+		#print("point cloud size = ",len(cloud.data), " bytes")
 
 		marker_array = MarkerArray()
 
@@ -113,7 +113,7 @@ class Segmentation:
 		cluster_indices = ec.Extract()
 		t2 =  time.clock()
 
-		print("ECE took ", t2-t1)
+		#print("ECE took ", t2-t1)
 
 		#for all j clusters
 		print("# clusters ", len(cluster_indices))
@@ -129,7 +129,6 @@ class Segmentation:
 				sum_y = sum_y + xyz_pc[indice][1]
 				sum_z = sum_z + xyz_pc[indice][2]
 
-
 			x = sum_x/len(indices)
 			y = sum_y/len(indices)
 			z = sum_z/len(indices)
@@ -143,7 +142,6 @@ class Segmentation:
 			self.pub.publish(pc_msg)
 
 		self.track(marker_array)
-		#self.obj_markers_pub.publish(marker_array)
 
 	def track(self, marker_array):
 		if self.objects == None:
@@ -161,19 +159,22 @@ class Segmentation:
 			if len(old_indxs) >= len(new_indxs):
 				for i, old in enumerate(old_objects):
 					closest_indx, min_dist = find_closest(old, new_objects)
-					print(i, marker2str(old), closest_indx, marker2str(new_objects[closest_indx]), format(min_dist, '.3f'))
+					#print(i, marker2str(old), closest_indx, marker2str(new_objects[closest_indx]), format(min_dist, '.3f'))
 					if min_dist < THRESHOLD:
-						if i in old_indxs: old_indxs.remove(i)
-						if closest_indx in new_indxs: new_indxs.remove(closest_indx)
+						if i in old_indxs: 
+							old_indxs.remove(i)
+						if closest_indx in new_indxs: 
+							new_indxs.remove(closest_indx)
 			else:
 				for i, new in enumerate(new_objects):
 					closest_indx, min_dist = find_closest(new, old_objects)
-					print(i, marker2str(new), closest_indx, marker2str(old_objects[closest_indx]), format(min_dist, '.3f'))
+					#print(i, marker2str(new), closest_indx, marker2str(old_objects[closest_indx]), format(min_dist, '.3f'))
 					if min_dist < THRESHOLD:
-						if i in new_indxs: new_indxs.remove(i)
-						if closest_indx in old_indxs: old_indxs.remove(closest_indx)
+						if i in new_indxs: 
+							new_indxs.remove(i)
+						if closest_indx in old_indxs: 
+							old_indxs.remove(closest_indx)
 
-			print(old_indxs, new_indxs)
 			if len(old_indxs) > len(new_indxs):
 				print("things removed")
 				#TODO Handle in future
@@ -183,6 +184,7 @@ class Segmentation:
 			
 			if len(old_indxs) == len(new_indxs) and len(old_indxs) > 0:
 				print("things have moved")
+				print(old_indxs, new_indxs)
 				for old_indx in old_indxs:
 					new = [new_objects[i] for i in new_indxs]
 					closest_indx, min_dist = find_closest(self.objects[old_indx], new)

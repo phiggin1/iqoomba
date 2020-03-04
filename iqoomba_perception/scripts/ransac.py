@@ -24,7 +24,6 @@ class RansacFilter:
 
 		self.pub.publish(pc_msg)
 
-
 	def ground_filter(self, cloud):
 		pcl_cloud = ros_to_pcl(cloud)
 
@@ -36,8 +35,9 @@ class RansacFilter:
 			seg.set_normal_distance_weight(0.1)
 			seg.set_method_type(pcl.SAC_RANSAC)
 			seg.set_max_iterations(100)
-			seg.set_distance_threshold(0.05)
+			seg.set_distance_threshold(0.005)
 			_, self.model = seg.segment()
+
 		'''
 		if self.model == None:
 			seg = pcl_cloud.make_segmenter()
@@ -55,15 +55,15 @@ class RansacFilter:
 			d = distance_point_to_plane(p, self.model)
 			#0.005 is a fudge factor to correct for any error in the model
 			#to avoid having any parts of the ground to creep in
-			if d > 0.005:
+			if d > 0.0025:
 				cnt = cnt + 1
 				indices.append(i)
 
 			i = i + 1
 
 		t2 =  time.clock()
-		print("RANSAC took ", t2-t1)
-		print("model:", self.model)
+		#print("RANSAC took ", t2-t1)
+		#print("model:", self.model)
 		#print("org size", cloud.width*cloud.height, "ransac size", cnt)
 
 		return pcl_cloud.extract(indices, negative=False)

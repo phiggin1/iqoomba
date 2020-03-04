@@ -49,14 +49,7 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>create_autonomy</build_depend>
-  <build_depend>iai_kinect2</build_depend>
-  <build_depend>iqoomba_tf_setup</build_depend>
-  <build_depend>move_base</build_depend>
-  <build_export_depend>iqoomba_tf_setup</build_export_depend>
-  <build_export_depend>move_base</build_export_depend>
-  <exec_depend>iqoomba_tf_setup</exec_depend>
-  <exec_depend>move_base</exec_depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->

@@ -93,11 +93,11 @@ class SoundBoard:
         ]
         '''
 
+
         self.statements = [
             "yes",
             "thank you"
         ]
-
 
         self.objects = dict()
 
@@ -107,7 +107,6 @@ class SoundBoard:
         self.soundhandle.wait_for_server()
 
         self.point_publisher = rospy.Publisher('clicked_point', PointStamped, queue_size=10)
-
 
         tracked_objects = rospy.wait_for_message('tracked_objects', MarkerArray)
         self.init_objects(tracked_objects)
@@ -266,8 +265,8 @@ class SoundBoard:
         goal = SpeechGoal()
         goal.text = s
         goal.metadata = ''
-        #self.soundhandle.send_goal(goal)
-        #self.soundhandle.wait_for_result()
+        self.soundhandle.send_goal(goal)
+        self.soundhandle.wait_for_result()
 
         self.log.write(str(rospy.Time.now()) + ":" + s+"\n")
 
